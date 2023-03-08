@@ -1,2 +1,3 @@
 .env
 websocket_server_ratchet/vendor
+websocket_server_ratchet_2/vendor
