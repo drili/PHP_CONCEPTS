@@ -1,0 +1,46 @@
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NMPVHKH');</script>
+
+{% if first_time_accessed %}
+<script>
+(function(){
+    window.dataLayer = window.dataLayer || [];
+
+    // Totals
+    var shipping_price = '{{shipping_price | money_without_currency }}';
+    shipping_price = shipping_price.replace(",", ".");
+
+    var total_price = '{{total_price | money_without_currency }}';
+    total_price = total_price.replace(",", ".");
+    
+    var tax_price = '{{tax_price | money_without_currency }}';
+    tax_price = tax_price.replace(",", ".");
+
+    var items = [];
+
+    {% for line_item in checkout.line_items %}
+        items.push({
+            item_id: '{{ line_item.sku }}',
+            item_name: '{{ line_item.title | remove: "'" | remove: '"'}}',
+            price: {{ line_item.final_price | times: 0.01 }},
+            quantity: {{ line_item.quantity }}
+        });
+    {% endfor %}
+
+    window.dataLayer.push({
+        event: "purchase",
+        ecommerce: {
+            transaction_id: "{{ checkout.order_id }}",
+            currency: "{{ checkout.currency }}",
+            value: total_price,
+            shipping: shipping_price,
+            tax: tax_price,
+            items: items
+        }
+    });
+})();
+</script>
+{% endif %}
